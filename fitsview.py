@@ -64,12 +64,12 @@ if None in tmp:
 if not args.block and not args.convert and os.fork():
     sys.exit()
 
-import matplotlib
+import warnings
 from auto_stretch.stretch import Stretch
 if args.convert:
     from PIL import Image
 
-matplotlib.use("TkAgg")
+warnings.filterwarnings("ignore")
 stretch = Stretch()
 
 # compute and plot
@@ -86,7 +86,10 @@ def plot(items):
             Image.fromarray(stretched_image).convert('RGB').save(save_path)
         else:
             fig, ax = plt.subplots(1, 1, figsize=(10, 6), tight_layout=True)
-            fig.canvas.set_window_title(f"{file} [table {i}]")
+            try:
+                fig.canvas.set_window_title(f"{file} [table {i}]")
+            except AttributeError:
+                fig.suptitle(f"{file} [table {i}]")
             ax.axis("off")
             ax.imshow(stretched_image, cmap=args.cmap)
 if len(args.images) == 1 or args.single_thread:
